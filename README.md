@@ -7,8 +7,7 @@ How to run:
 
 Set up the specifics of your run within the "USER DEFINITIONS" section of control\_jobs.sh.  These include
 
-<ol>
-<li>`user`: Your user name on CISL machines</li>
+``user``: Your user name on CISL machines
 <li>``PROJECT``: CISL project number</li>
 <li>``runname``: The name of the run you want to generate timeseries files for</li>
 <li>``ystart``: the start year for time series generation</li>
