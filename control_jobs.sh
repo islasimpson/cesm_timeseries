@@ -62,7 +62,9 @@ fi
 if [ ! -d ./logs ] ; then
     mkdir ./logs
 fi
-
+if [ ! -d ./control/files ] ; then
+    mkdir ./control/files
+fi
 
 #----Sort out time chunking
 qsub -v runname=$runname,basepath=$basepath,tempdir=$tempdir,ystart=$ystart,yend=$yend,chunk=$chunk,PROJECT=$PROJECT run_sortout_timechunks.pbs
