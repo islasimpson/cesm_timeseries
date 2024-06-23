@@ -26,8 +26,8 @@ You might want to do this in a screen session.
 
 For troubleshooting, theres information in 
 ``./pbsfiles/output.log``
-``./pbsfiles/warnings.txt``
-``./pbsfiles/progress.txt``
+``./logs/warnings.txt``
+``./logs/progress.txt``
 
 
 How it works:
