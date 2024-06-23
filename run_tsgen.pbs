@@ -1,0 +1,93 @@
+#!/bin/bash
+#PBS -N ncrcat_job
+#PBS -A P93300313
+#PBS -l select=1:ncpus=12:mem=10GB
+#PBS -l walltime=12:00:00
+#PBS -q casper
+#PBS -j oe
+#PBS -o ./pbsfiles/output.log
+#PBS -e ./pbsfiles/error.log
+
+# ----Set up trap to make completion file when this completes or times out
+trap 'touch ./control/COMPLETE' EXIT
+
+
+# ----Set up directories for logs and variable control
+curdir=$(pwd)
+controldir=$curdir/control/
+logdir=$curdir/logs/
+
+# -----Load a standard conda environment
+module load conda
+conda activate npl-2024a
+
+# -----Obtain the file list 
+indexfiles=($(ls ./control/files/segment_index_*.txt))
+filesfiles=($(ls ./control/files/segment_files_*.txt))
+
+# ----Total number of segs 
+nsegs=${#indexfiles[@]}
+
+# ----Obtain the list of variables if this is not a continuation
+if [[ $firstpass == True ]] ; then
+    if [ -z $vars ]; then
+        echo "getting the variable list (all vars)"
+        # ----Obtain variable list
+        actualfile=$(head -n 1 ${filesfiles[0]})
+        python "./control/scripts/getvars.py" "$actualfile" "$logdir/vars.txt"
+    else
+        echo "getting the variable list (your specified vars)"
+        for ivar in ${vars[@]}; do
+            echo $ivar >> $logdir/vars.txt
+        done
+    fi
+
+    # ----Make a that contains all variables for the second stage
+    cp $logdir/vars.txt $logdir/allvars.txt
+fi
+#----End obtain variable list
+
+
+
+
+# ----Read in the variables from the log file
+while IFS= read -r line; do
+    vars+=("$line")
+done < "$logdir/vars.txt"
+
+# ----Loop over variables
+for ivar in ${vars[@]} ; do
+    echo "ncrcat-ing "$ivar
+    # Define ncrcat function
+    run_ncrcat() {
+        local filelist=$1
+        local outfile=$2
+        local index1=$3
+        local index2=$4 
+        ncrcat -v $ivar,lon,lat,hyam,hybm,ilev,hyai,hybi,date,datesec $(cat $filelist) -o $outfile 
+        ncks -O -d time,$index1,$index2 $outfile $outfile
+    }
+
+    # Loop through the files in batches and run them in parallel
+
+    for ((i=0; i<nsegs; i+=1)); do
+        readarray -t indexinfo < ${indexfiles[i]}
+        outfile=$outpath/$runname'.'$ivar'.'${indexinfo[2]}'.nc'
+        echo ${filesfiles[i]}
+        echo $outfile
+        # only perform ncrcat if file doesn't already exist
+        if [ ! -f $outfile ] ; then 
+            run_ncrcat ${filesfiles[i]} $outfile ${indexinfo[0]} ${indexinfo[1]} &
+        fi
+        # Limit to 12 background jobs
+        if (( $(jobs -r -p | wc -l) >= 12 )) ; then
+            wait -n
+        fi
+    done
+    wait
+
+    # Remove this variable from the variable list
+    python "./control/scripts/cutvarfromlog.py" "$logdir/vars.txt" "$ivar"
+done
+
+
