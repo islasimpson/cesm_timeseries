@@ -20,7 +20,7 @@ chunk=1
 #--Location of history files
 basepath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/RAW/atm/h2/"
 
-#--Scratch space for intermediate files
+#--Scratch space for intermediate files (Note, any files that are in here will get deleted by the scripts)
 tempdir="/glade/derecho/scratch/islas/temp/RRAtlantic/"
 
 #--Outpath for time series files
