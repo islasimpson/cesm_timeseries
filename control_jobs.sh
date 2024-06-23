@@ -71,7 +71,7 @@ rm ./control/COMPLETE
 
 
 #-----First Pass
-qsub -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=True run_h1.pbs 
+qsub -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=True run_tsgen.pbs 
 while [[ ! -f ./control/COMPLETE ]] ; do 
     echo "Job is still running..."$(date) >> ./logs/progress.txt 
     sleep 60
@@ -88,7 +88,7 @@ while [[ -s "./logs/vars.txt" ]] ; do
 
      varcontinue=$(head -n 1 ./logs/vars.txt)
      echo "Continuation at var="$varcontinue >> ./logs/progress.txt
-     qsub -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=False run_h1.pbs
+     qsub -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=False run_tsgen.pbs
      while [[ ! -f ./control/COMPLETE ]] ; do
          echo "Job is still running..."$(date) >> ./logs/progress.txt
          sleep 60
