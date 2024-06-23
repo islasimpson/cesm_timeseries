@@ -1,0 +1,43 @@
+#!/bin/bash
+#PBS -N ncrcat_job
+#PBS -A P93300313
+#PBS -l select=1:ncpus=10:mem=10GB
+#PBS -l walltime=00:10:00
+#PBS -q casper
+#PBS -j oe
+#PBS -o ./pbsfiles/output.log
+#PBS -e ./pbsfiles/error.log
+
+# ----Set up trap to make completion file when this completes or times out
+trap 'touch ./control/COMPLETE' EXIT
+
+# ----Set up directories for logs and variable control
+curdir=$(pwd)
+controldr=$curdir/control/
+logdir=$curdir/logs/
+
+# ----Load a standard conda environment
+module load conda
+conda activate npl-2024a
+
+# ----Obtain the file list
+files=($(ls $basepath*.h2.*))
+
+## ----Output the time dimsension to temporary files of the same name
+run_gettime() {
+    local fin=$1
+    local fout=$2
+    ncks -v time $fin $fout
+}
+
+for ifile in ${files[@]}; do
+    filename=${ifile##*/}
+    run_gettime $ifile $tempdir/$filename &
+    if (( $(jobs -r -p | wc -l) >= 10 )) ; then
+        wait -n
+    fi
+done
+wait # wait for all the background jobs to finish
+
+python "./control/scripts/sort_timechunks.py" "$tempdir" "$basepath" "$runname" "$ystart" "$yend" "$chunk" 
+
