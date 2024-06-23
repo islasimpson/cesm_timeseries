@@ -41,3 +41,6 @@ wait # wait for all the background jobs to finish
 
 python "./control/scripts/sort_timechunks.py" "$tempdir" "$basepath" "$runname" "$ystart" "$yend" "$chunk" 
 
+#----clean up the files that have been generated
+rm $tempdir/*.nc 
+
