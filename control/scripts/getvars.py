@@ -2,6 +2,15 @@ import xarray as xr
 import numpy as np
 import sys
 import os
+import argparse
+
+def main():
+    parser = argparse.ArgumentParser(description="Argument parser for getting variables")
+    parser.add_argument('--filename', type=str, required=True, help='First history file used for getting variables')
+    parser.add_argument('--logname', type=str, required=True, help='Location of file that contains the variable list')
+
+    args = parser.parse_args()
+    getvars(args.filename, args.logname)
 
 def getvars(filename, logname):
     try:
@@ -31,13 +40,6 @@ def getvars(filename, logname):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python ???")
-        sys.exit(1)
-
-    filename = sys.argv[1]
-    logname = sys.argv[2]
-    getvars(filename,logname)
-
+    main()
 
     
