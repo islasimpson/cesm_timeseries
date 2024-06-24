@@ -38,6 +38,19 @@ VARS=""
 if [ -f "./control/COMPLETE" ] ; then
     rm ./control/COMPLETE
 fi 
+
+#----Make required directories if they don't exist
+if [ ! -d ./pbsfiles ] ; then
+    mkdir pbsfiles
+fi
+
+if [ ! -d ./logs ] ; then
+    mkdir ./logs
+fi
+if [ ! -d ./control/files ] ; then
+    mkdir ./control/files
+fi
+
 #----Clean up any previous control files from previous executions
 if [ "$(ls -A ./control/files)" ] ; then 
     rm ./control/files/*
@@ -52,18 +65,6 @@ fi
 
 if [ "$(ls -A $tempdir)" ] ; then
     rm $tempdir/*
-fi
-
-#----Make required directories if they don't exist
-if [ ! -d ./pbsfiles ] ; then
-    mkdir pbsfiles
-fi
-
-if [ ! -d ./logs ] ; then
-    mkdir ./logs
-fi
-if [ ! -d ./control/files ] ; then
-    mkdir ./control/files
 fi
 
 #----Sort out time chunking
