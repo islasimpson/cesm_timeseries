@@ -39,7 +39,7 @@ for ifile in ${files[@]}; do
 done
 wait # wait for all the background jobs to finish
 
-python "./control/scripts/sort_timechunks.py" "$tempdir" "$basepath" "$runname" "$ystart" "$yend" "$chunk" 
+python "./control/scripts/sort_timechunks.py" --tempdir="$tempdir" --basepath="$basepath" --runname="$runname" --ystart=$ystart --yend=$yend --chunk_size=$chunk 
 
 #----clean up the files that have been generated
 rm $tempdir/*.nc 
