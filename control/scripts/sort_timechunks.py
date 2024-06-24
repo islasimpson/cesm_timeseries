@@ -6,9 +6,25 @@ from glob import glob
 import os
 import datetime
 import sys
+import argparse
 
 import warnings
 warnings.filterwarnings('ignore')
+
+def main():
+    parser = argparse.ArgumentParser(description="Argument parser for sorting out time")
+    parser.add_argument('--tempdir', type=str, required=True, help='Location of temporary dir')
+    parser.add_argument('--basepath', type=str, required=True, help='Directory containing history flies')
+    parser.add_argument('--runname', type=str, required=True, help='Simulation name')
+    parser.add_argument('--ystart', type=int, required=True, help='Start year of time series generation')
+    parser.add_argument('--yend', type=int, required=True, help='End year of time series generation')
+    parser.add_argument('--chunk_size', type=int, required=True, help='Chunk size for time series chunking')
+
+    args = parser.parse_args()
+
+    #---???Could add other options here.  If statements depending on daily average, monthly average etc
+    sorttime_day_avg(args.tempdir,args.basepath,args.runname,args.ystart,args.yend,args.chunk_size)
+
 
 def sortout_time_day_avg(dat):
     timebndavg = np.array(dat['time_bnds'],
@@ -102,24 +118,4 @@ def sorttime_day_avg(tempdir,basepath,runname,ystart,yend,chunk_size):
         segment = segment + 1
 
 if __name__ == "__main__":
-    if len(sys.argv) < 6:
-        print("Usage: python ???")
-        sys.exit(1)
-
-    tempdir = sys.argv[1]
-    basepath = sys.argv[2]
-    runname = sys.argv[3]
-    ystart = sys.argv[4]
-    yend = sys.argv[5]
-    chunk_size = sys.argv[6]
-
-    sorttime_day_avg(tempdir,basepath,runname,ystart,yend,chunk_size)
-
-
-
-
-
-
-
-
-
+    main()
