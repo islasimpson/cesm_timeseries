@@ -2,6 +2,16 @@ import xarray as xr
 import numpy as np
 import sys
 import os
+import argparse
+
+def main():
+    parser = argparse.ArgumentParser(description="Argument parser for cut variable from log")
+    parser.add_argument('--logname', type=str, required=True, help='Location of the file that contains the variable list')
+    parser.add_argument('--var', type=str, required=True, help='Variable to be cut')
+
+    args = parser.parse_args()
+
+    cutvarfromlog(args.logname, args.var)
 
 def cutvarfromlog(logfile,var):
     try:
@@ -15,10 +25,4 @@ def cutvarfromlog(logfile,var):
         sys.exit(1)
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python ???")
-        sys.exit(1)
-
-    logfile=sys.argv[1]
-    var=sys.argv[2]
-    cutvarfromlog(logfile,var)
+    main()
