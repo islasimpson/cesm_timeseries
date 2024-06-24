@@ -34,7 +34,7 @@ if [[ $firstpass == True ]] ; then
         echo "getting the variable list (all vars)"
         # ----Obtain variable list
         actualfile=$(head -n 1 ${filesfiles[0]})
-        python "./control/scripts/getvars.py" "$actualfile" "$logdir/vars.txt"
+        python "./control/scripts/getvars.py" --filename="$actualfile" --logname="$logdir/vars.txt"
     else
         echo "getting the variable list (your specified vars)"
         for ivar in ${vars[@]}; do
@@ -87,7 +87,8 @@ for ivar in ${vars[@]} ; do
     wait
 
     # Remove this variable from the variable list
-    python "./control/scripts/cutvarfromlog.py" "$logdir/vars.txt" "$ivar"
+    python "./control/scripts/cutvarfromlog.py" --logname="$logdir/vars.txt" --var="$ivar"
+
 done
 
 
