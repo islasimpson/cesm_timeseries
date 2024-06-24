@@ -52,10 +52,6 @@ def sortout_time_day_avg(dat):
     return dat
 
 def sorttime_day_avg(tempdir,basepath,runname,ystart,yend,chunk_size):
-    ystart=int(ystart)
-    yend=int(yend)
-    chunk_size=int(chunk_size)
-    print('In the script')
     #--read in files that contain time variable
     timefiles = sorted(glob(tempdir+"*.nc"))
 
