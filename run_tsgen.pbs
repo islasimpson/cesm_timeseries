@@ -1,6 +1,5 @@
 #!/bin/bash
 #PBS -N ncrcat_job
-#PBS -A $PROJECT 
 #PBS -l select=1:ncpus=12:mem=10GB
 #PBS -l walltime=12:00:00
 #PBS -q casper
