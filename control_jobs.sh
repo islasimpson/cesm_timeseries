@@ -4,8 +4,8 @@
 #--User
 user=islas
 
-#--PROJECT
-PROJECT=P93300313
+#--account key
+account=P93300313
 
 #--Run Name
 runname="f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001"
@@ -67,7 +67,7 @@ if [ ! -d ./control/files ] ; then
 fi
 
 #----Sort out time chunking
-qsub -v runname=$runname,basepath=$basepath,tempdir=$tempdir,ystart=$ystart,yend=$yend,chunk=$chunk,PROJECT=$PROJECT run_sortout_timechunks.pbs
+qsub -A $account -v runname=$runname,basepath=$basepath,tempdir=$tempdir,ystart=$ystart,yend=$yend,chunk=$chunk run_sortout_timechunks.pbs
 while [[ ! -f ./control/COMPLETE ]] ; do
     echo "Sorting of the time chunks is still running..."$(date) >> ./logs/progress.txt
     sleep 60
@@ -76,7 +76,7 @@ rm ./control/COMPLETE
 
 
 #-----First Pass
-qsub -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,PROJECT=$PROJECT,firstpass=True run_tsgen.pbs 
+qsub -A $account -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=True run_tsgen.pbs 
 while [[ ! -f ./control/COMPLETE ]] ; do 
     echo "Job is still running..."$(date) >> ./logs/progress.txt 
     sleep 60
@@ -93,7 +93,7 @@ while [[ -s "./logs/vars.txt" ]] ; do
 
      varcontinue=$(head -n 1 ./logs/vars.txt)
      echo "Continuation at var="$varcontinue >> ./logs/progress.txt
-     qsub -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,PROJECT=$PROJECT,firstpass=False run_tsgen.pbs
+     qsub -A $account -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=False run_tsgen.pbs
      while [[ ! -f ./control/COMPLETE ]] ; do
          echo "Job is still running..."$(date) >> ./logs/progress.txt
          sleep 60
