@@ -10,26 +10,29 @@ account=P93300313
 #--Run Name
 runname="f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001"
 
-#--Start and End year for time series generation
-ystart=1958
-yend=2014
+#--Start and End date for time series generation (of the form YYYYMMDD)
+datestart=19580101
+dateend=19651231
 
-# Chunk size for time series output (in years)
-chunk=1
+# Chunk size for time series output
+# Chunk size in years if positive i.e., 1 gives a chunk size of 1 year
+# Chunk size in months if negative i.e., -1 gives a chunk size of 1 month
+chunk=-1
 
 #--Location of history files
-basepath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/RAW/atm/h2/"
+basepath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/RAW/atm/h3/"
 
 #--Scratch space for intermediate files (Note, any files that are in here will get deleted by the scripts)
 tempdir="/glade/derecho/scratch/islas/temp/RRAtlantic/"
 
 #--Outpath for time series files
-outpath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/timeseries/atm/day/"
+#outpath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/timeseries/atm/day/"
+outpath="/glade/derecho/scratch/islas/processed/RRAtlantic/atm/day/"
 
 #--Specify Variables
 # If specified as an empty string the it does all the vairables in the file
-VARS=""
-#VARS=( "DCQ" )
+#VARS=""
+VARS=( "PSL" )
 
 
 #-----------------END USER DEFINITIONS-------------------------------
@@ -68,14 +71,14 @@ if [ "$(ls -A $tempdir)" ] ; then
 fi
 
 #----Sort out time chunking
-qsub -A $account -v runname=$runname,basepath=$basepath,tempdir=$tempdir,ystart=$ystart,yend=$yend,chunk=$chunk run_sortout_timechunks.pbs
+qsub -A $account -v runname=$runname,basepath=$basepath,tempdir=$tempdir,datestart=$datestart,dateend=$dateend,chunk=$chunk run_sortout_timechunks.pbs
 while [[ ! -f ./control/COMPLETE ]] ; do
     echo "Sorting of the time chunks is still running..."$(date) >> ./logs/progress.txt
     sleep 60
 done
 rm ./control/COMPLETE 
 
-
+exit
 #-----First Pass
 qsub -A $account -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=True run_tsgen.pbs 
 while [[ ! -f ./control/COMPLETE ]] ; do 

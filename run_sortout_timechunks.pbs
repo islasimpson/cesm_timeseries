@@ -20,7 +20,7 @@ module load conda
 conda activate npl-2024a
 
 # ----Obtain the file list
-files=($(ls $basepath*.h2.*))
+files=($(ls $basepath*.nc))
 
 ## ----Output the time dimsension to temporary files of the same name
 run_gettime() {
@@ -38,7 +38,9 @@ for ifile in ${files[@]}; do
 done
 wait # wait for all the background jobs to finish
 
-python "./control/scripts/sort_timechunks.py" --tempdir="$tempdir" --basepath="$basepath" --runname="$runname" --ystart=$ystart --yend=$yend --chunk_size=$chunk 
+exit
+
+python "./control/scripts/sort_timechunks.py" --tempdir="$tempdir" --basepath="$basepath" --runname="$runname" --datestart=$datestart --dateend=$dateend --chunk_size=$chunk 
 
 #----clean up the files that have been generated
 rm $tempdir/*.nc 
