@@ -38,9 +38,7 @@ for ifile in ${files[@]}; do
 done
 wait # wait for all the background jobs to finish
 
-exit
-
-python "./control/scripts/sort_timechunks.py" --tempdir="$tempdir" --basepath="$basepath" --runname="$runname" --datestart=$datestart --dateend=$dateend --chunk_size=$chunk 
+python "./control/scripts/sort_timechunks.py" --tempdir="$tempdir" --basepath="$basepath" --runname="$runname" --datestart=$datestart --dateend=$dateend --chunk_size=$chunk --freq=$freq 
 
 #----clean up the files that have been generated
 rm $tempdir/*.nc 

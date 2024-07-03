@@ -19,11 +19,13 @@ def main():
     parser.add_argument('--datestart', type=str, required=True, help='Start year of time series generation')
     parser.add_argument('--dateend', type=str, required=True, help='End year of time series generation')
     parser.add_argument('--chunk_size', type=int, required=True, help='Chunk size for time series chunking')
+    parser.add_argument('--freq', type=str, required=True, help='Frequency of the data to be processed, Options: day_avg')
 
     args = parser.parse_args()
 
     #---???Could add other options here.  If statements depending on daily average, monthly average etc
-    sorttime_day_avg(args.tempdir,args.basepath,args.runname,args.datestart,args.dateend,args.chunk_size)
+    if (args.freq == 'day_avg'):
+        sorttime_day_avg(args.tempdir,args.basepath,args.runname,args.datestart,args.dateend,args.chunk_size)
 
 
 def sortout_time_day_avg(dat):
