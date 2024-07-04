@@ -17,10 +17,10 @@ dateend=19651231
 # Chunk size for time series output
 # Chunk size in years if positive i.e., 1 gives a chunk size of 1 year
 # Chunk size in months if negative i.e., -1 gives a chunk size of 1 month
-chunk=-1
+chunk=1
 
 #--Location of history files
-basepath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/RAW/atm/h2/"
+basepath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/RAW/atm/h1/"
 
 #--Scratch space for intermediate files (Note, any files that are in here will get deleted by the scripts)
 tempdir="/glade/derecho/scratch/islas/temp/RRAtlantic/"
@@ -36,7 +36,8 @@ VARS=( "PSL" )
 
 #--frequency of field
 #--Options: day_avg = daily average
-freq='day_avg'
+#           mon_avg = monthly average
+freq='mon_avg'
 
 
 #-----------------END USER DEFINITIONS-------------------------------
@@ -81,6 +82,8 @@ while [[ ! -f ./control/COMPLETE ]] ; do
     sleep 60
 done
 rm ./control/COMPLETE 
+
+exit
 
 #-----First Pass
 qsub -A $account -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=True run_tsgen.pbs 

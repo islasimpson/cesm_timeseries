@@ -27,6 +27,9 @@ def main():
     if (args.freq == 'day_avg'):
         sorttime_day_avg(args.tempdir,args.basepath,args.runname,args.datestart,args.dateend,args.chunk_size)
 
+    if (args.freq == 'mon_avg'):
+        sorttime_mon_avg(args.tempdir,args.basepath,args.runname,args.datestart,args.dateend,args.chunk_size)
+
 
 def sortout_time_day_avg(dat):
     timebndavg = np.array(dat['time_bnds'],
@@ -89,8 +92,8 @@ def sorttime_day_avg(tempdir,basepath,runname,datestart,dateend,chunk_size):
         if (chunk_size < 0):
             d2 = d1 + pd.DateOffset(months=np.abs(chunk_size)) - pd.DateOffset(days=1)
 
-        d1string = str(d1.year.values[0])+str(d1.month.values[0]).zfill(2)+str(d1.day.values[0]).zfill(2)
-        d2string = str(d2.year.values[0])+str(d2.month.values[0]).zfill(2)+str(d2.day.values[0]).zfill(2)
+        d1string = str(d1.year.values[0]).zfill(4)+str(d1.month.values[0]).zfill(2)+str(d1.day.values[0]).zfill(2)
+        d2string = str(d2.year.values[0]).zfill(4)+str(d2.month.values[0]).zfill(2)+str(d2.day.values[0]).zfill(2)
 
         fnamestring=d1string+'-'+d2string
         found_d1=False
@@ -130,6 +133,101 @@ def sorttime_day_avg(tempdir,basepath,runname,datestart,dateend,chunk_size):
         d1 = d2 + pd.DateOffset(days=1)
         idate = int(str(d1.year.values[0])+str(d1.month.values[0]).zfill(2)+str(d1.day.values[0]).zfill(2)) 
         segment = segment + 1
+
+def sorttime_mon_avg(tempdir,basepath,runname,datestart,dateend,chunk_size):
+    """Sort out monthly averaged fields"""
+    #--read in files that contain the time variable
+    timefiles = sorted(glob(tempdir+"*.nc"))
+
+    #--Set up the real filenames that contain the data
+    files = [ basepath+os.path.basename(ifile) for ifile in timefiles ] 
+
+    alltime=[]
+    for i in np.arange(0,len(timefiles),1):
+        dat = xr.open_dataset(timefiles[i])
+        timebndavg = np.array(dat['time_bnds'],
+                              dtype='datetime64[s]').view('i8').mean(axis=1).astype('datetime64[s]')
+        dat['time'] = timebndavg
+        alltime.append(dat)
+
+
+    d1_str = datestart
+    dend_str = dateend
+
+    year_d1 = d1_str[0:4]
+    mon_d1 = d1_str[4:6]
+    year_dend = dend_str[0:4]
+    mon_dend = dend_str[4:6]
+
+    d1 = pd.date_range(start=str(year_d1)+'-'+str(mon_d1), periods=1)
+    dend = int(year_dend+mon_dend)
+    idate = int(year_d1+mon_d1)
+
+    segment = 0
+    while idate < int(dend):
+        if (chunk_size > 0): # chunks in years
+            d2 = d1 + pd.DateOffset(years=chunk_size) - pd.DateOffset(days=1)
+        if (chunk_size < 0): # chunks in months
+            d2 = d1 + pd.DateOffset(months=np.abs(chunk_size)) - pd.DateOffset(days=1)
+        if (chunk_size == 0): # one chunk for the full record
+            nmonths = (12 - int(mon_d1) + 1) + (int(year_dend) - int(year_d1) - 1)*12 + int(mon_dend)
+            d2 = d1 + pd.DateOffset(months=nmonths) - pd.DateOffset(days=1)
+
+        d1string = str(d1.year.values[0]).zfill(4)+str(d1.month.values[0]).zfill(2)
+        d2string = str(d2.year.values[0]).zfill(4)+str(d2.month.values[0]).zfill(2)
+
+        fnamestring=d1string+'-'+d2string
+        found_d1=False
+        found_d2=False
+
+
+        #---Now loop over files to find the files that contribute to the chunk and the indices for nco
+        for ifile in np.arange(0,len(alltime),1):
+            time_thisfile = alltime[ifile].time
+            timestring=[ str(time_thisfile.dt.year.values[i]).zfill(4)+
+                         str(time_thisfile.dt.month.values[i]).zfill(2) 
+                         for i in np.arange(0,time_thisfile.time.size,1) ]
+    
+            if (found_d1 == False):
+                test = np.isin(d1string, timestring)
+                if test:
+                    filelist = [ files[ifile] ]
+                    sumtimes = alltime[ifile].time.size
+                    i = np.argwhere(np.char.find(timestring, d1string) >= 0)
+                    i = i.flatten()
+                    id1 = i[0]
+                    found_d1 = True
+            elif ((found_d1 == True) & (found_d2 == False)):
+                filelist.append(files[ifile])
+                sumtimes = sumtimes + alltime[ifile].time.size
+    
+            if (found_d2 == False):
+                test = np.isin(d2string, timestring)
+                if test:
+                    i = np.argwhere(np.char.find(timestring, d2string) >= 0)
+                    i = i.flatten()
+                    id2 = i[0]
+                    sumtimes = sumtimes - alltime[ifile].time.size + id2
+                    found_d2 = True
+
+
+        with open('./control/files/segment_files_'+str(segment).zfill(4)+'.txt','w') as file:
+            for itime in filelist:
+                file.write("%s\n" % itime)
+    
+        with open('./control/files/segment_index_'+str(segment).zfill(4)+'.txt','w') as file:
+            file.write("%s\n" % str(id1))
+            file.write("%s\n" % str(sumtimes))
+            file.write("%s\n" % fnamestring)
+        
+        d1 = d2 + pd.DateOffset(days=1)
+        idate = int(str(d1.year.values[0]).zfill(4)+str(d1.month.values[0]).zfill(2))
+        segment = segment + 1
+
+
+
+
+
 
 if __name__ == "__main__":
     main()
