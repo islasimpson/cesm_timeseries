@@ -78,10 +78,17 @@ def sorttime_day_avg(tempdir,basepath,runname,datestart,dateend,chunk_size):
     #--Convert initial date to an integer to keep track
     idate = int(datestart)
     d1_str = datestart
+    dend_str = dateend
 
     year_d1 = d1_str[0:4]
     mon_d1 = d1_str[4:6]
+    year_dend = dend_str[0:4]
+    mon_dend = dend_str[4:6]
+    day_dend = dend_str[6:8]
+
     d1 = pd.date_range(start=str(year_d1)+'-'+str(mon_d1)+'-01 12:00:00', periods=1)
+
+
 
     #---Loop over date ranges
     segment=0
@@ -91,9 +98,15 @@ def sorttime_day_avg(tempdir,basepath,runname,datestart,dateend,chunk_size):
             d2 = d1 + pd.DateOffset(years=chunk_size) - pd.DateOffset(days=1)
         if (chunk_size < 0):
             d2 = d1 + pd.DateOffset(months=np.abs(chunk_size)) - pd.DateOffset(days=1)
+        if (chunk_size == 0):
+            d2 = pd.date_range(start=str(year_dend).zfill(4)+'-'+str(mon_dend).zfill(2)+
+                  '-'+str(day_dend).zfill(2)+
+                  ' 12:00:00', periods=1)
 
-        d1string = str(d1.year.values[0]).zfill(4)+str(d1.month.values[0]).zfill(2)+str(d1.day.values[0]).zfill(2)
-        d2string = str(d2.year.values[0]).zfill(4)+str(d2.month.values[0]).zfill(2)+str(d2.day.values[0]).zfill(2)
+        d1string = str(d1.year.values[0]).zfill(4)+str(d1.month.values[0]).zfill(2)+\
+                       str(d1.day.values[0]).zfill(2)
+        d2string = str(d2.year.values[0]).zfill(4)+str(d2.month.values[0]).zfill(2)+\
+                       str(d2.day.values[0]).zfill(2)
 
         fnamestring=d1string+'-'+d2string
         found_d1=False
@@ -131,7 +144,8 @@ def sorttime_day_avg(tempdir,basepath,runname,datestart,dateend,chunk_size):
 
         # --- setting dates and segment names up for the next iteration
         d1 = d2 + pd.DateOffset(days=1)
-        idate = int(str(d1.year.values[0])+str(d1.month.values[0]).zfill(2)+str(d1.day.values[0]).zfill(2)) 
+        idate = int(str(d1.year.values[0]).zfill(4)+str(d1.month.values[0]).zfill(2)+
+          str(d1.day.values[0]).zfill(2)) 
         segment = segment + 1
 
 def sorttime_mon_avg(tempdir,basepath,runname,datestart,dateend,chunk_size):
