@@ -10,13 +10,17 @@ Set up the specifics of your run within the "USER DEFINITIONS" section of contro
 1. ``user``: Your user name on CISL machines
 2. ``PROJECT``: CISL project number
 3. ``runname``: The name of the run you want to generate timeseries files for
-4. ``ystart``: the start year for time series generation
-5. ``yend``: the end year for time series generation
-6. ``chunk``: the chunk size for time series output (only works for integer number of years right now)
+4. ``datestart``: the start date for time series generation in the form YYYYMMDD
+5. ``dateend``: the end date for time series generation in the form YYYYMMDD
+6. ``chunk``: the chunk size for time series output: >0 indicates number of years, <0 indicates number of months, and =0 indicates the full record available
 7. ``basepath``: The location of your CESM history files
-8. ``tempdir``: scratch space for intermediate files (note any files that are in here will get deleted by the scripts)
-9. ``outpath``: the location where you want to output the timeseries files
-10. ``VARS``: A optional user defined list of variables for which to generate times series.  If left as a blank string it will do all variables in the files
+8. ``htype``: the type of histori file.  Will be used to obtain files using ``ls *.$htype.*``
+9. ``tempdir``: scratch space for intermediate files (note any files that are in here will get deleted by the scripts)
+10. ``outpath``: the location where you want to output the timeseries files
+11. ``VARS``: A optional user defined list of variables for which to generate times series.  If left as a blank string it will do all variables in the files
+12. ``freq``: the frequency of output.  Options; day\_avg, mon\_avg, 6h\_avg
+13. ``timebndsvar``: the name of the time bounds variable
+14. ``max_resubmit``: the maximum number of times you want to resubmit the time series generation if it times out (prevents perpetual runaway jobs)
 
 Then execute the script by...
 
