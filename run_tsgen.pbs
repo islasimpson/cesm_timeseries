@@ -10,6 +10,17 @@
 # ----Set up trap to make completion file when this completes or times out
 trap 'touch ./control/COMPLETE' EXIT
 
+# ----If VARS is not an empty string, split out back to an array
+if [ ! -z $vars ] ; then
+    IFS='_' read -r -a vars_array <<< "$vars"
+#    vars=$vars_array
+fi
+
+vars=()
+for ivar in ${vars_array[@]} ; do
+   vars+=("$ivar") 
+done
+
 
 # ----Set up directories for logs and variable control
 curdir=$(pwd)
@@ -83,11 +94,16 @@ for ivar in ${vars[@]} ; do
             wait -n
         fi
     done
-    wait
+
+    if (( $(jobs -r -p | wc -l) >= 12 )) ; then
+        wait -n
+    fi
+
+#    wait
 
     # Remove this variable from the variable list
     python "./control/scripts/cutvarfromlog.py" --logname="$logdir/vars.txt" --var="$ivar"
 
 done
-
+wait
 
