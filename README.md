@@ -1,7 +1,7 @@
 # cesm_timeseries
 Tools for generating single variable timeseries from CESM history files.
 
-<em>Note: this currently only works for daily averages.  I've also only tested it for a chunk size of 1 year so far - need to test for more.  Some changes would need to be made for the decoding of the time axis for this to work on piControls too, so it only works on historical-->2100.</em>
+<em>Note: this currently only works for monthly, daily or 6 hourly averages atmospheric history files.</em>
 
 How to run:
 
