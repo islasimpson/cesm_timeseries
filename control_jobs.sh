@@ -5,16 +5,33 @@
 user=islas
 
 #--account key
-account=P93300313
+account=P04010022
 
 #--Run Name
-runname="f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001"
+#runname="b.e23_alpha17f.BLT1850.ne30_t232.098"
+#runname="c153_topfix_ne240pg3_FMTHIST_aicn_x01"
+#runname="b.e23_alpha17f.BLT1850.ne30_t232.092"
+#runname="b.e23_alpha17f.BLTHIST.ne30_t232.092"
+runname="b.e30_beta02.BMT1850.ne30_t232.104"
+#runname="b.e23_alpha17f.BLT1850.ne30_t232.102"
+#runname="b.e30_beta02.BLTHIST.ne30_t232.104"
+#runname="b.e30_beta02.BLT1850.ne30_t232.104"
+#runname="b.e23_alpha17f.BLTHIST.ne30_t232.092"
+#runname="b.e23_alpha17f.BLT1850.ne30_t232.098"
 
 #--Start and End date for time series generation (of the form YYYYMMDD)
-#datestart=19580101
-#dateend=20141231
-datestart="19580101"
-dateend="20141231"
+#datestart=18500101
+#dateend=19911231
+#datestart="00010101"
+#dateend="02541231"
+datestart="00010101"
+dateend="01041231"
+#datestart="18500101"
+#dateend="20131231"
+#datestart="00010101"
+#dateend="00221231"
+#datestart="00010101"
+#dateend="02541231"
 
 
 # Chunk size for time series output
@@ -23,23 +40,36 @@ dateend="20141231"
 chunk=0
 
 #--Location of history files
-basepath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/RAW/atm/h0/"
-#basepath="/glade/derecho/scratch/hannay/archive/b.e23_alpha17f.BLT1850.ne30_t232.097/atm/hist/"
+#basepath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/RAW/atm/h0/"
+#basepath="/glade/derecho/scratch/juliob/archive/c153_ne240pg3_FMTHIST_aicn_x01/atm/regridded/"
+#basepath="/glade/derecho/scratch/hannay/archive/b.e23_alpha17f.BLTHIST.ne30_t232.092/atm/hist/"
+#basepath="/glade/derecho/scratch/hannay/archive/b.e23_alpha17f.BLT1850.ne30_t232.098/atm/hist/"
+basepath="/glade/derecho/scratch/hannay/archive/"$runname"/atm/hist/"
+#basepath="/glade/campaign/cgd/amp/juliob/archive/c153_ne30pg3_FMTHIST_x02/atm/regridded/"
+#basepath="/glade/derecho/scratch/juliob/archive/c153_topfix_ne240pg3_FMTHIST_aicn_x01/atm/regridded/"
+#basepath="/glade/derecho/scratch/hannay/archive/b.e23_alpha17f.BLTHIST.ne30_t232.098b/atm/hist/"
 
 #--String that represents the type of history file.  Will be used to obtain files using ls *.$htype.*
-htype="h0"
+#htype="h0a"
+htype="h4a"
 
 #--Scratch space for intermediate files (Note, any files that are in here will get deleted by the scripts)
-tempdir="/glade/derecho/scratch/islas/temp/RRAtlantic/"
+tempdir="/glade/derecho/scratch/islas/temp/timeseries/"
 
 #--Outpath for time series files
 #outpath="/glade/campaign/cesm/development/cvcwg/cvwg/f.e23.FAMIPfosi.ne0np4.NATL.ne30x8_t13.001_FINAL/timeseries/atm/6h_avg/"
-outpath="/glade/derecho/scratch/islas/processed/check_timeseries/6h/"
+#outpath="/glade/campaign/cgd/cas/islas/CESM_DATA/julio_runs/c153_ne240pg3_FMTHIST_aicn_x01/mon/"
+outpath="/glade/campaign/cgd/cas/islas/CESM_DATA/CESM3_dev/"$runname"/"
+#outpath="/glade/campaign/cgd/cas/islas/CESM_DATA/julio_runs/c153_ne240pg3_FMTHIST_aicn_x01/6hi/"
+#outpath="/glade/campaign/cgd/cas/islas/CESM_DATA/CESM3_dev/b.e23_alpha17f.BLTHIST.ne30_t232.098b/"
+#outpath="/glade/derecho/scratch/islas/temp/forrich/f.cam6_3_161.FLTHIST_ne30.ke.001/"
 
 #--Specify Variables
 # If specified as an empty string the it does all the vairables in the file
-VARS=""
-VARS=( "PS" )
+#VARS=""
+#VARS=( "FSNTC" "TGCLDIWP" "TGCLDLWP" "CLDLOW" "AODVIS" "BURDENBC" "BURDENDUST" "BURDENPOM" "BURDENSEASALT" "BURDENSO4" "BURDENSOA" "CDNUMC" "CLDMED" "FSNT" "SWCF" "TS" "ACTNI" "ACTNL" "ACTREI" "ACTREL" "CLDTOT" "U" "Q" "T" "OMEGA" )
+VARS=( "THzm" "UVzm" "UWzm" "Uzm" "VTHzm" "Vzm" "WTHzm" "Wzm" )
+
 
 #--frequency of field
 #--Options: day_avg = daily average
@@ -48,10 +78,13 @@ VARS=( "PS" )
 freq='mon_avg'
 
 #--The name of the time bounds variable
-timebndsvar='time_bnds'
+timebndsvar='time_bounds'
 
 #--The maximum number of resubmits you'd like (preventing runaway jobs that go on forever)
 max_resubmit=3
+
+#--Specify as True if looking at zonal mean variables
+zmvar=True
 
 
 #-----------------END USER DEFINITIONS-------------------------------
@@ -101,7 +134,6 @@ while [[ ! -f ./control/COMPLETE ]] ; do
 done
 rm ./control/COMPLETE 
 
-
 #-----If specifying variables then getting the variable list into a form that works for the pbs script
 if [ ! -z $VARS ] ; then
     VARS=$(IFS=_ ; echo "${VARS[*]}")
@@ -109,7 +141,7 @@ fi
 
 
 #-----First Pass
-qsub -A $account -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=True,htype=$htype run_tsgen.pbs 
+qsub -A $account -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=True,htype=$htype,zmvar=$zmvar run_tsgen.pbs 
 while [[ ! -f ./control/COMPLETE ]] ; do 
     echo "Job is still running..."$(date) >> ./logs/progress.txt 
     sleep 60
@@ -130,7 +162,7 @@ while [[ -s "./logs/vars.txt" ]] && [ $resubmits -le $max_resubmits ] ; do
 
      varcontinue=$(head -n 1 ./logs/vars.txt)
      echo "Continuation at var="$varcontinue >> ./logs/progress.txt
-     qsub -A $account -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=False,htype=$htype run_tsgen.pbs
+     qsub -A $account -v runname=$runname,basepath=$basepath,outpath=$outpath,vars=$VARS,firstpass=False,htype=$htype,zmvar=$zmvar run_tsgen.pbs
      while [[ ! -f ./control/COMPLETE ]] ; do
          echo "Job is still running..."$(date) >> ./logs/progress.txt
          sleep 60

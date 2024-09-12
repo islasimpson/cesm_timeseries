@@ -69,14 +69,29 @@ done < "$logdir/vars.txt"
 for ivar in ${varsuse[@]} ; do
     echo "ncrcat-ing "$ivar
     # Define ncrcat function
-    run_ncrcat() {
-        local filelist=$1
-        local outfile=$2
-        local index1=$3
-        local index2=$4 
-        ncrcat -v $ivar,lon,lat,hyam,hybm,ilev,hyai,hybi,date,datesec $(cat $filelist) -o $outfile 
-        ncks -O -d time,$index1,$index2 $outfile $outfile
-    }
+    if [[ $zmvar == True ]] ; then
+
+        run_ncrcat() {
+            local filelist=$1
+            local outfile=$2
+            local index1=$3
+            local index2=$4 
+            ncrcat -v $ivar,zalon,zalat,hyam,hybm,ilev,hyai,hybi,date,datesec $(cat $filelist) -o $outfile 
+            ncks -O -d time,$index1,$index2 $outfile $outfile
+        }
+
+    else
+
+        run_ncrcat() {
+            local filelist=$1
+            local outfile=$2
+            local index1=$3
+            local index2=$4 
+            ncrcat -v $ivar,lon,lat,hyam,hybm,ilev,hyai,hybi,date,datesec $(cat $filelist) -o $outfile 
+            ncks -O -d time,$index1,$index2 $outfile $outfile
+        }
+
+    fi
 
     # Loop through the files in batches and run them in parallel
 
